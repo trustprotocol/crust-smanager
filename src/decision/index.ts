@@ -1,6 +1,5 @@
 import * as cron from 'node-cron';
 import * as _ from 'lodash';
-import BigNumber from 'bignumber.js';
 // eslint-disable-next-line node/no-extraneous-import
 import {Header} from '@polkadot/types/interfaces';
 import TaskQueue, {BT} from '../queue';
@@ -11,7 +10,7 @@ import {gigaBytesToBytes, hexToString} from '../util';
 import SworkerApi from '../sworker';
 
 // The initial probability is 5‰
-const initialProbability = 0.005;
+const initialProbability = 1; // 0.005;
 
 interface Task extends BT {
   // The ipfs cid value
@@ -202,7 +201,9 @@ export default class DecisionEngine {
       logger.info(`  ↪ 📂  Got ipfs file size ${t.cid}, size is: ${size}`);
       if (size !== t.size) {
         logger.warn(`  ↪ ⚠️  Size not match: ${size} != ${t.size}`);
-        return true;
+
+        // TODO: Bring it back
+        // return false;
       }
 
       // 2. Get and judge repo can take it, make sure the free can take double file
@@ -247,10 +248,11 @@ export default class DecisionEngine {
       cid
     );
 
-    if (
-      fileInfo &&
-      fileInfo.replicas.length > Number(fileInfo.expected_replica_count)
-    ) {
+    logger.info(
+      `  ↪ 📄  Got file order from chain ${JSON.stringify(fileInfo)}`
+    );
+
+    if (fileInfo && fileInfo.replicas.length > fileInfo.expectedReplicaCount) {
       logger.warn(
         `  ↪ ⚠️  File replica already full with ${fileInfo.replicas.length}`
       );

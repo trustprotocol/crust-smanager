@@ -76,7 +76,12 @@ export interface FileInfo {
   size: number;
 }
 
-export type DetailFileInfo = typeof types.FileInfo;
+export interface DetailFileInfo {
+  cid: string;
+  size: number;
+  expectedReplicaCount: number;
+  replicas: string[];
+}
 
 export default class CrustApi {
   private readonly api: ApiPromise;
@@ -149,7 +154,19 @@ export default class CrustApi {
   async maybeGetNewFile(cid: string): Promise<DetailFileInfo | null> {
     await this.withApiReady();
 
-    return parseObj(await this.api.query.market.files(cid));
+    const [fileInfo, _usedInfo] = parseObj(
+      await this.api.query.market.files(cid)
+    );
+
+    if (fileInfo) {
+      return {
+        cid,
+        size: fileInfo['file_size'],
+        expectedReplicaCount: fileInfo['expected_replica_count'],
+        replicas: Array.from(fileInfo['replicas']),
+      };
+    }
+    return null;
   }
 
   // TODO: add more error handling here
