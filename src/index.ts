@@ -12,27 +12,4 @@ const chainAccount = argv[6] || '';
 const ipfsTimeout = 8000 * 1000; // 8000s
 const sworkerTimeout = 8000 * 1000; //8000s
 
-try {
-  const de = new DecisionEngine(
-    chainAddr,
-    ipfsAddr,
-    sworkerAddr,
-    nodeId,
-    chainAccount,
-    ipfsTimeout,
-    sworkerTimeout
-  );
-
-  // TODO: Get cancellation signal and handle errors?
-  de.subscribeNewFiles().catch(e =>
-    logger.error(`💥  Caught pending queue error: ${e.toString()}`)
-  );
-  de.subscribePullings().catch(e =>
-    logger.error(`💥  Caught pulling queue error: ${e.toString()}`)
-  );
-  de.subscribeSealings().catch(e =>
-    logger.error(`💥  Caught sealing queue error: ${e.toString()}`)
-  );
-} catch (e) {
-  logger.error(`💥  Caught unhandled error ${e.toString()}`);
-}
+logger.info(`Comming Soon`);
